@@ -11,10 +11,11 @@ namespace QualisysRealTime.Unity
 {
     public class RTSkeleton : MonoBehaviour
     {
-        public string SkeletonName = "Dave";
+        public string SkeletonName = "SR";
 
         private Avatar mSourceAvatar;
         public Avatar DestinationAvatar;
+
         public bool PoseFingers = true;
         public bool PoseJawJoint = false;
 
@@ -29,6 +30,9 @@ namespace QualisysRealTime.Unity
 
         protected RTClient rtClient;
         private Skeleton mQtmSkeletonCache;
+        private Vector3 mFingerBoneTranslation = new Vector3(0.0f, 0.04f, 0.0f);
+        private Vector3 mLeftThumbBoneTranslation = new Vector3(-0.04f, 0.0f, 0.04f);
+        private Vector3 mRightThumbBoneTranslation = new Vector3(0.04f, 0.0f, -0.04f); 
 
         void Update()
         {
@@ -115,7 +119,7 @@ namespace QualisysRealTime.Unity
                                     ParentId = fingersParenting,
                                     Position = Vector3.zero,
                                     Rotation = Quaternion.identity,
-                                    TPosition = Vector3.zero,
+                                    TPosition = mecanimBoneName.Contains("Thumb") ? mLeftThumbBoneTranslation : mFingerBoneTranslation,
                                     TRotation = Quaternion.identity
                                 };
                                 mQtmSkeletonCache.Segments.Add((uint)mQtmSkeletonCache.Segments.Count, FingerSegment);
@@ -156,7 +160,7 @@ namespace QualisysRealTime.Unity
                                     ParentId = fingersParenting,
                                     Position = Vector3.zero,
                                     Rotation = Quaternion.identity,
-                                    TPosition = Vector3.zero,
+                                    TPosition = mecanimBoneName.Contains("Thumb") ? mRightThumbBoneTranslation : mFingerBoneTranslation,
                                     TRotation = Quaternion.identity
                                 };
                                 mQtmSkeletonCache.Segments.Add((uint)mQtmSkeletonCache.Segments.Count, FingerSegment);
@@ -307,6 +311,7 @@ namespace QualisysRealTime.Unity
                 {
                     human = humanBones.ToArray(),
                     skeleton = skeletonBones.ToArray(),
+                    //feetSpacing = FeetSpacing   // Doesn't seem to work, no idea why
                 }
             );
             if (mSourceAvatar.isValid == false || mSourceAvatar.isHuman == false)
